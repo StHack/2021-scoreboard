@@ -61,7 +61,9 @@ export function UserPanel () {
                       toggleIsAdmin(u)
                     } else if (
                       // eslint-disable-next-line no-restricted-globals
-                      confirm(`Are you sure to grant user "${u.username}" admin privilege ?`)
+                      confirm(
+                        `Are you sure to grant user "${u.username}" admin privilege ?`,
+                      )
                     ) {
                       toggleIsAdmin(u)
                     }

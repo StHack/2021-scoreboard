@@ -75,7 +75,8 @@ export function ChallDescriptionPopup ({
 
         {openState === 'broken' && (
           <Text gridArea="desc" my="2">
-            This challenge is currently considered as broken and cannot be completed right now.
+            This challenge is currently considered as broken and cannot be
+            completed right now.
           </Text>
         )}
 

@@ -15,7 +15,7 @@ export function ScoreBoard () {
       alignItems={['stretch', 'start']}
       flexDirection="column"
       gridTemplateColumns="3fr 1fr"
-      gap="2"
+      gap="4"
       p="2"
     >
       <TeamsScoreBoard score={teamsScore} />

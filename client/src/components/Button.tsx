@@ -86,7 +86,7 @@ Button.defaultProps = {
   fontWeight: 1,
   fontSize: 1,
   border: 'currentColor solid',
-  borderWidth: 'thick',
+  borderWidth: 'thin',
   borderRadius: 4,
   placeItems: 'center',
   placeContent: 'center',
