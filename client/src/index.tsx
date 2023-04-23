@@ -1,12 +1,10 @@
-import { ThemeProvider } from '@emotion/react'
 import { ProvideAuth } from 'hooks/useAuthentication'
-import { useThemeMode } from 'hooks/useThemeMode'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import DefaultStyles from 'styles'
-import { darkTheme, lightTheme } from 'styles/theme'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { MantineProvider } from '@mantine/core'
+import { themeMantine } from './styles/theme-mantine'
 
 const root = createRoot(document.getElementById('root')!)
 root.render(
@@ -16,15 +14,12 @@ root.render(
 )
 
 function AppWrapper () {
-  const { currentTheme } = useThemeMode()
-
   return (
-    <ThemeProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
-      <DefaultStyles />
+    <MantineProvider withGlobalStyles withNormalizeCSS theme={themeMantine}>
       <ProvideAuth>
         <App />
       </ProvideAuth>
-    </ThemeProvider>
+    </MantineProvider>
   )
 }
 

@@ -1,52 +1,5 @@
-import { css, Global } from '@emotion/react'
-import shouldForwardProp from '@styled-system/should-forward-prop'
 import * as CSS from 'csstype'
-import { ThemeMode, useThemeMode } from 'hooks/useThemeMode'
-import {
-  FlexboxProps,
-  RequiredTheme,
-  ResponsiveValue,
-  system,
-  Theme,
-  TLengthStyledSystem,
-} from 'styled-system'
-import { FontCss } from './font'
-import { FormsCss } from './forms'
-import { ResetCss } from './reset'
-
-export default function DefaultStyles () {
-  const { currentTheme } = useThemeMode()
-  return (
-    <>
-      <ResetCss />
-      <ColorScheme currentTheme={currentTheme} />
-      <FontCss />
-      <FormsCss />
-    </>
-  )
-}
-
-type ColorSchemeProps = {
-  currentTheme: ThemeMode
-}
-function ColorScheme ({ currentTheme }: ColorSchemeProps) {
-  return (
-    <Global
-      styles={css`
-        :root {
-          color-scheme: ${currentTheme};
-        }
-      `}
-    />
-  )
-}
-
-export const clean = (...propsToClean: string[]) => ({
-  shouldForwardProp: (p: any) =>
-    shouldForwardProp(p) || propsToClean.includes(p),
-})
-
-export const cleanStyledSystem = clean()
+import { FlexboxProps, RequiredTheme, system, Theme } from 'styled-system'
 
 export interface PlaceProps<ThemeType extends Theme = RequiredTheme>
   extends FlexboxProps<ThemeType> {
@@ -66,32 +19,3 @@ export const place = system({
   placeContent: true,
   placeSelf: true,
 })
-
-export interface GapProps<
-  ThemeType extends Theme = RequiredTheme,
-  TVal = CSS.Property.Gap<TLengthStyledSystem>,
-> {
-  /**
-   * The gap CSS property sets the gaps (gutters) between rows and columns. It is a shorthand for row-gap
-   * and column-gap.
-   *
-   * [MDN reference](https://developer.mozilla.org/en-US/docs/Web/CSS/gap)
-   */
-  gap?: ResponsiveValue<TVal, ThemeType> | undefined
-}
-
-export const gap = system({
-  gap: {
-    property: 'gap',
-    scale: 'space',
-    defaultScale: [0, 4, 8, 16, 32, 64, 128, 256, 512],
-  },
-})
-
-export const SafariSpecific = (cssRule: any) => css`
-  @media not all and (min-resolution: 0.001dpcm) {
-    @media {
-      ${cssRule}
-    }
-  }
-`

@@ -1,25 +1,34 @@
-import styled from '@emotion/styled'
-import { Box } from 'components/Box'
-import { Button } from 'components/Button'
-import { ChallDescriptionPopup } from 'components/ChallDescriptionPopup'
-import { DropdownInput } from 'components/DropdownInput'
-import { ImageInput } from 'components/ImageInput'
-import { LabelInput } from 'components/LabelInput'
-import Popup from 'components/Popup'
-import { SelectInput } from 'components/SelectInput'
-import { TextArea, TextInput } from 'components/TextInput'
 import { useChallengeForm } from 'hooks/useChallengeForm'
-import { Categories } from 'models/Category'
 import { Challenge } from 'models/Challenge'
-import { Difficulties } from 'models/Difficulty'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  Button,
+  Group,
+  Modal,
+  Select,
+  Text,
+  Textarea,
+  TextInput,
+  Title,
+} from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
+import { Categories } from '../../../models/Category'
+import { Difficulties } from '../../../models/Difficulty'
+import { ImageInput } from '../../../components/ImageInput'
+import styled from '@emotion/styled'
+import { ChallDescriptionPopup } from '../../../components/ChallDescriptionPopup/ChallDescriptionPopup'
 
 export type AdminProps = {
   chall?: Challenge
   onClose: () => void
+  isOpen: boolean
 }
 
-export function ChallengeForm ({ chall, onClose }: AdminProps) {
+export const ChallengeForm = ({
+  chall,
+  onClose,
+  isOpen = false,
+}: AdminProps) => {
   const {
     formProps,
     nameProps,
@@ -35,72 +44,108 @@ export function ChallengeForm ({ chall, onClose }: AdminProps) {
   } = useChallengeForm(chall, onClose)
   const ref = useRef<HTMLFormElement>(null)
   const [showPreview, setShowPreview] = useState<boolean>(false)
+  const [modalOpened, { open, close }] = useDisclosure(false)
+
+  const dataCategory = Categories.map(cat => ({ value: cat, label: cat }))
+  const dataDifficulties = Difficulties.map(difficulty => ({
+    value: difficulty,
+    label: difficulty,
+  }))
+
+  const [title, setTitle] = useState('Create a new challenge')
+
+  useEffect(() => {
+    isOpen ? open() : close()
+  }, [isOpen, open, close])
+
+  useEffect(() => {
+    setTitle(
+      isNewChallenge
+        ? 'Create a new challenge'
+        : `Edition of challenge "${chall?.name}"`,
+    )
+  }, [chall?.name, isNewChallenge])
+
+  const handleCloseModal = () => {
+    onClose()
+  }
+  const handleSubmit = () => {
+    ref.current?.requestSubmit() && onClose()
+  }
 
   return (
-    <Popup
-      customAction={
-        <Button onClick={() => setShowPreview(v => !v)}>
-          {showPreview ? 'Hide' : 'Show'} Preview
-        </Button>
-      }
-      title={
-        isNewChallenge
-          ? 'Create a new challenge'
-          : `Edition of challenge "${chall?.name}""`
-      }
-      onCancel={onClose}
-      onValidate={() => ref.current?.requestSubmit() && onClose()}
-    >
-      <Form ref={ref} {...formProps}>
-        <LabelInput label="Name" required>
-          <TextInput type="text" {...nameProps} />
-        </LabelInput>
-
-        <LabelInput label="Author" required>
-          <TextInput type="text" {...authorProps} />
-        </LabelInput>
-
-        <LabelInput label="Description (markdown format)" required>
-          <TextArea rows={6} {...descriptionProps} />
-        </LabelInput>
-
-        <LabelInput label="Flag" required={isNewChallenge}>
-          <TextInput type="text" {...flagsProps} />
-        </LabelInput>
-
-        <LabelInput label="Category" required>
-          <DropdownInput {...categoryProps} predefinedValues={Categories} />
-        </LabelInput>
-
-        <LabelInput label="Difficulty" required>
-          <SelectInput predefinedValues={Difficulties} {...difficultyProps} />
-        </LabelInput>
-
-        <LabelInput label="Image">
-          <ImageInput {...imgProps} />
-        </LabelInput>
-
-        {error && (
-          <Box backgroundColor="red" color="white">
-            {error}
-          </Box>
-        )}
-
-        {showPreview && (
-          <ChallDescriptionPopup
-            challenge={preview}
-            messages={[]}
-            onClose={() => setShowPreview(false)}
-            score={{ achievements: [], score: 100 }}
-            readonly
-          />
-        )}
-      </Form>
-    </Popup>
+    <>
+      {!showPreview && (
+        <Modal
+          centered
+          size="xl"
+          withCloseButton={false}
+          opened={modalOpened}
+          onClose={handleCloseModal}
+        >
+          <Title order={2} ta="center" color="customPink.0">
+            {title}
+          </Title>
+          <Form ref={ref} {...formProps}>
+            <TextInput label="Name" withAsterisk {...nameProps} />
+            <TextInput label="Author" withAsterisk {...authorProps} />
+            <Textarea
+              label="Description (markdown format)"
+              minRows={6}
+              withAsterisk
+              {...descriptionProps}
+            />
+            <TextInput
+              label="Flag"
+              withAsterisk={isNewChallenge}
+              {...flagsProps}
+            />
+            <Select
+              label="Category"
+              data={dataCategory}
+              {...categoryProps}
+              withAsterisk
+            />
+            <Select
+              label="Difficulty"
+              data={dataDifficulties}
+              {...difficultyProps}
+              withAsterisk
+            />
+            <ImageInput {...imgProps} />
+            {error && (
+              <Text c="white" bg="red">
+                {error}
+              </Text>
+            )}
+          </Form>
+          <Group grow mt="xl">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button variant="outline" onClick={() => setShowPreview(v => !v)}>
+              {showPreview ? 'Hide' : 'Show'} Preview
+            </Button>
+            <Button color="customPink.0" onClick={handleSubmit}>
+              Confirm
+            </Button>
+          </Group>
+        </Modal>
+      )}
+      {showPreview && (
+        <ChallDescriptionPopup
+          challenge={preview}
+          messages={[]}
+          score={{ achievements: [], score: 100 }}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
+    </>
   )
 }
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
 `

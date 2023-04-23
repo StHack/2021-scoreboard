@@ -1,27 +1,28 @@
-import { Box } from 'components/Box'
 import { useGame } from 'hooks/useGame'
 import { GameConfig } from 'models/GameConfig'
 import ReactMarkdown from 'react-markdown'
 import { ReactMarkdownRenderers } from 'styles/react-markdown'
+import { Center, Paper } from '@mantine/core'
 
-export function Rules () {
+export const Rules = () => {
   const { gameConfig } = useGame()
 
   return (
-    <Box
-      m="auto"
-      p="4"
-      pt="1"
-      maxWidth="maximalCentered"
-      backgroundColor="primary"
-      borderRadius="2"
-      boxShadow="small"
-    >
-      <ReactMarkdown
-        components={ReactMarkdownRenderers}
-        children={rulesMarkdown(gameConfig)}
-      />
-    </Box>
+    <Center h={'100%'} p={{ base: 0, md: 'lg' }}>
+      <Paper
+        shadow={'xl'}
+        radius={'lg'}
+        p={{ base: 'xs', md: 'xl' }}
+        bg="gray.0"
+        fz={{ base: '0.8rem', md: '1rem' }}
+        maw="100vw"
+      >
+        <ReactMarkdown
+          components={ReactMarkdownRenderers}
+          children={rulesMarkdown(gameConfig)}
+        />
+      </Paper>
+    </Center>
   )
 }
 

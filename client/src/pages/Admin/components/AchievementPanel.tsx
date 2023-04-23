@@ -1,67 +1,97 @@
-import { Box } from 'components/Box'
-import { Button } from 'components/Button'
 import { useAdmin } from 'hooks/useAdmin'
 import { useGame } from 'hooks/useGame'
 import { exportAsJson } from 'services/share'
-import { Table, Tr, ActionPanel } from './styled'
+import { Box, Button, Flex, Group } from '@mantine/core'
+import {
+  HeadData,
+  RowData,
+  TableSort,
+} from '../../../components/TableSortFilter/TableSortFilter'
+import { Achievement } from '../../../models/Achievement'
 
-export function AchievementPanel () {
+export const AchievementPanel = () => {
   const { achievements } = useGame()
   const { deleteAchievement } = useAdmin()
 
+  const handleClickActions = (achievement: Achievement, action: string) => {
+    switch (action) {
+      case 'delete':
+        if (
+          // eslint-disable-next-line no-restricted-globals
+          confirm(
+            `Are you sure to delete Achievement:\n\n${achievement.challenge}\n${
+              achievement.teamname
+            }\n${achievement.username}\n${achievement.createdAt.toISOString()}`,
+          )
+        ) {
+          deleteAchievement(achievement)
+        }
+
+        break
+    }
+  }
+
+  const headers: HeadData[] = [
+    { key: 'challenge', sortable: true, label: 'Challenge' },
+    { key: 'team', sortable: true, label: 'Team' },
+    { key: 'username', sortable: true, label: 'User' },
+    { key: 'date', sortable: true, label: 'Date' },
+    { key: 'action', sortable: false, label: 'Action' },
+  ]
+
+  const data: RowData[] = achievements.map(achievement => {
+    return {
+      challenge: achievement.challenge,
+      team: achievement.teamname,
+      username: achievement.username,
+      date: achievement.createdAt,
+      action: (
+        <AchievementActions
+          achievement={achievement}
+          handleClick={handleClickActions}
+        />
+      ),
+    }
+  })
+
   return (
-    <Box display="flex" flexDirection="column">
-      <Box display="flex" flexDirection="row" gap="2">
+    <Flex direction="column" p="md" mt="xl">
+      <Group>
         <Button
-          onClick={() => {
-            exportAsJson(achievements, 'achievements')
+          variant="outline"
+          color="dark"
+          onClick={async () => {
+            await exportAsJson(achievements, 'achievements')
           }}
         >
           Export as JSON
         </Button>
+      </Group>
+      <Box mt="xl">
+        <TableSort
+          sortOptions={{ sortBy: 'date', reversed: true }}
+          headers={headers}
+          data={data}
+        />
       </Box>
-      <Table m="2">
-        <thead>
-          <tr>
-            <th scope="col">Challenge</th>
-            <th scope="col">Team</th>
-            <th scope="col">User</th>
-            <th scope="col">Date</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {achievements.map(a => (
-            <Tr key={a.challenge + a.teamname}>
-              <td>{a.challenge}</td>
-              <td>{a.teamname}</td>
-              <td>{a.username}</td>
-              <td>{a.createdAt.toISOString()}</td>
-              <ActionPanel m="2">
-                <Button
-                  variant="danger"
-                  onClick={() => {
-                    if (
-                      // eslint-disable-next-line no-restricted-globals
-                      confirm(
-                        `Are you sure to delete Achievement:\n\n${
-                          a.challenge
-                        }\n${a.teamname}\n${
-                          a.username
-                        }\n${a.createdAt.toISOString()}`,
-                      )
-                    ) {
-                      deleteAchievement(a)
-                    }
-                  }}
-                >
-                  Delete
-                </Button>
-              </ActionPanel>
-            </Tr>
-          ))}
-        </tbody>
-      </Table>
-    </Box>
+    </Flex>
+  )
+}
+
+interface AchievementActionsProps {
+  achievement: Achievement
+  handleClick: (achievement: Achievement, action: string) => void
+}
+
+const AchievementActions = ({
+  achievement,
+  handleClick,
+}: AchievementActionsProps) => {
+  return (
+    <Group>
+      <Button color="red" onClick={() => handleClick(achievement, 'delete')}>
+        Delete
+      </Button>
+    </Group>
   )
 }

@@ -1,32 +1,19 @@
-import styled from '@emotion/styled'
-import { InputHTMLAttributes, useRef } from 'react'
-import { Box } from './Box'
+import { InputHTMLAttributes } from 'react'
+import { Box, FileInput, Image as MantineImage, rem } from '@mantine/core'
+import { IconUpload } from '@tabler/icons-react'
 
-export function ImageInput ({
+export const ImageInput = ({
   value,
   onChange,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement>) {
-  const ref = useRef<HTMLInputElement>(null)
+}: InputHTMLAttributes<HTMLInputElement>) => {
   return (
     <Box>
-      <Hidden
-        ref={ref}
-        {...props}
-        type="file"
-        accept="image/png, image/jpeg"
-        onChange={async e => {
-          const file = e.target.files?.[0]
-          const webp = await convertToWebp(file)
-          const image = await toBase64(webp)
-          onChange?.({ target: { value: image } } as any)
-        }}
-      />
-
       {value && (
-        <ImageB
+        <MantineImage
           src={value as string}
           alt=""
+          maw={240}
+          mx="auto"
           onClickCapture={e => {
             e.preventDefault()
             onChange?.({ target: { value: undefined } } as any)
@@ -35,20 +22,25 @@ export function ImageInput ({
       )}
 
       {!value && (
-        <Box
-          display="flex"
-          height="3"
-          placeContent="center"
-          alignItems="center"
-        >
-          Upload an image
-        </Box>
+        <FileInput
+          label="Image"
+          placeholder="Upload an image"
+          accept="image/png,image/jpeg"
+          icon={<IconUpload size={rem(14)} />}
+          onChange={async file => {
+            if (file) {
+              const webp = await convertToWebp(file)
+              const image = await toBase64(webp)
+              onChange?.({ target: { value: image } } as any)
+            }
+          }}
+        />
       )}
     </Box>
   )
 }
 
-function toBase64 (file?: File): Promise<string | undefined> {
+const toBase64 = (file?: File): Promise<string | undefined> => {
   if (!file) {
     return Promise.resolve(undefined)
   }
@@ -61,7 +53,7 @@ function toBase64 (file?: File): Promise<string | undefined> {
   })
 }
 
-function convertToWebp (file?: File): Promise<File | undefined> {
+const convertToWebp = (file?: File): Promise<File | undefined> => {
   if (!file) {
     return Promise.resolve(undefined)
   }
@@ -89,16 +81,3 @@ function convertToWebp (file?: File): Promise<File | undefined> {
     image.src = URL.createObjectURL(file)
   })
 }
-
-const ImageB = styled.img`
-  object-fit: contain;
-  width: 100%;
-  max-height: 20rem;
-`
-
-const Hidden = styled.input`
-  visibility: hidden;
-  height: 0;
-  width: 0;
-  position: absolute;
-`

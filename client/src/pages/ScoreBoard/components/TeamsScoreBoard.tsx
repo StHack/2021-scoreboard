@@ -1,69 +1,86 @@
-import styled from '@emotion/styled'
-import { Box } from 'components/Box'
 import { Logo } from 'components/Icon'
 import { TeamScore } from 'models/GameScore'
-import { space, SpaceProps } from 'styled-system'
+import { Box, Flex, Paper, Title } from '@mantine/core'
+import { Achievement } from '../../../models/Achievement'
+import {
+  HeadData,
+  RowData,
+  TableSort,
+} from '../../../components/TableSortFilter/TableSortFilter'
 
 export type TeamsScoreBoardProps = {
   score: TeamScore[]
 }
+
 export function TeamsScoreBoard ({ score }: TeamsScoreBoardProps) {
+  const headers: HeadData[] = [
+    {
+      key: 'rank',
+      label: 'Rank',
+      sortable: true,
+    },
+    {
+      key: 'team',
+      label: 'Team',
+      sortable: true,
+    },
+    {
+      key: 'score',
+      label: 'Score',
+      sortable: true,
+    },
+    {
+      key: 'breakthroughs',
+      label: 'Breakthroughs',
+      sortable: false,
+    },
+  ]
+
+  const data: RowData[] = score.map(cs => {
+    return {
+      rank: cs.rank,
+      team: cs.team,
+      score: cs.score,
+      breakthroughs: <BreakthroughsCell breakthroughs={cs.breakthroughs} />,
+    }
+  })
+
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Team</th>
-          <th>Score</th>
-          <th>Breakthrough</th>
-        </tr>
-      </thead>
-      {score.map(cs => (
-        <tr key={cs.team}>
-          <td>{cs.rank}</td>
-          <td>{cs.team}</td>
-          <td>{cs.score}</td>
-          <Box as="td" display="flex">
-            {cs.breakthroughs.map(({ username, createdAt, challenge }, i) => (
-              <Box
-                key={i}
-                title={`${username} - ${challenge} - ${createdAt.toLocaleTimeString(
-                  'fr',
-                )}`}
-              >
-                <Logo size="2" />
-              </Box>
-            ))}
-          </Box>
-        </tr>
-      ))}
-    </Table>
+    <Paper
+      shadow={'md'}
+      radius={'lg'}
+      mah={{ base: '30rem', md: '100%' }}
+      p={{ base: 'sm', md: 'xl' }}
+      sx={{ flexGrow: 1 }}
+      bg="gray.0"
+    >
+      <Flex h="100%" direction="column">
+        <Title order={2} color="customPink.0" align="center">
+          Ranking
+        </Title>
+        <TableSort data={data} headers={headers} />
+      </Flex>
+    </Paper>
   )
 }
 
-const Table = styled.table<SpaceProps>`
-  border-collapse: collapse;
-  border: 2px solid rgb(200, 200, 200);
-  ${space}
-
-  td,
-  th {
-    border: 1px solid rgb(190, 190, 190);
-  }
-
-  th {
-    background-color: rgb(235, 235, 235);
-  }
-
-  td {
-    text-align: center;
-  }
-
-  tr:nth-of-type(even) {
-    background-color: rgb(250, 250, 250);
-  }
-
-  tr:nth-of-type(odd) {
-    background-color: rgb(245, 245, 245);
-  }
-`
+const BreakthroughsCell = ({
+  breakthroughs,
+}: {
+  breakthroughs: Achievement[]
+}) => {
+  return (
+    <Flex>
+      {breakthroughs.map(({ username, createdAt, challenge }, i) => (
+        <Box
+          key={i}
+          title={`${username} - ${challenge} - ${createdAt.toLocaleTimeString(
+            'fr',
+          )}`}
+        >
+          <Logo size="1.5rem" />
+        </Box>
+      ))}
+    </Flex>
+  )
+}

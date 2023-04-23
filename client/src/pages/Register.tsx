@@ -1,10 +1,8 @@
 import styled from '@emotion/styled'
-import { Box } from 'components/Box'
-import { Button } from 'components/Button'
 import { Banner } from 'components/Icon'
-import { LabelInput } from 'components/LabelInput'
-import { TextInput } from 'components/TextInput'
 import { useRegisterForm } from 'hooks/useRegisterForm'
+import RegisterLoginContainer from '../components/RegisterLoginContainer'
+import { Box, Button, TextInput } from '@mantine/core'
 
 export function Register () {
   const {
@@ -17,41 +15,27 @@ export function Register () {
   } = useRegisterForm()
 
   return (
-    <Box display="grid" placeItems="center" maxWidth="60rem" margin="0 auto">
-      <Box display="flex" flexDirection="column">
-        <Banner mb="4" width="100%" />
-
-        <Form {...formProps}>
-          <LabelInput label="Username">
-            <TextInput type="text" {...usernameProps} />
-          </LabelInput>
-
-          <LabelInput label="Password">
-            <TextInput type="password" {...passwordProps} />
-          </LabelInput>
-
-          <LabelInput label="Team">
-            <TextInput type="text" {...teamProps} />
-          </LabelInput>
-
-          {error && (
-            <Box backgroundColor="red" color="white">
-              {error}
-            </Box>
-          )}
-
-          <Button
-            type="submit"
-            fontSize="2"
-            placeSelf="center"
-            m="3"
-            disabled={isLoading}
-          >
-            Register
-          </Button>
-        </Form>
-      </Box>
-    </Box>
+    <RegisterLoginContainer>
+      <Banner mb="4" width="100%" />
+      <Form {...formProps}>
+        <TextInput label="Username" type="text" {...usernameProps} />
+        <TextInput
+          label="Password"
+          type="password"
+          {...passwordProps}
+          mt={'md'}
+        />
+        <TextInput label="Team" type="text" {...teamProps} mt={'md'} />
+        {error && (
+          <Box bg="red" color="white">
+            {error}
+          </Box>
+        )}
+        <Button type="submit" mt={'lg'} m="3" disabled={isLoading}>
+          Register
+        </Button>
+      </Form>
+    </RegisterLoginContainer>
   )
 }
 

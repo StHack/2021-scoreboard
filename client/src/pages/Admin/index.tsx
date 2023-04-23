@@ -1,48 +1,50 @@
 import styled from '@emotion/styled'
-import { Box } from 'components/Box'
 import { Link, Route, Routes } from 'react-router-dom'
-import { fontSize, FontSizeProps, space, SpaceProps } from 'styled-system'
 import { AchievementPanel } from './components/AchievementPanel'
 import { ChallengePanel } from './components/ChallengePanel'
 import { GeneralPanel } from './components/GeneralPanel'
 import { UserPanel } from './components/UserPanel'
+import { Box, Flex, Paper, Title } from '@mantine/core'
+import { PropsWithChildren } from 'react'
 
-export function Admin () {
+export const Admin = () => {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      maxWidth="maximalCentered"
-      px="2"
-      margin="0 auto"
-      width="100%"
-    >
-      <Box display="flex" flexDirection="row" placeContent="center" gap="2">
-        <NavLink to="">General</NavLink>
-        <NavLink to="challenges">Challenges</NavLink>
-        <NavLink to="users">Users</NavLink>
-        <NavLink to="achievements">Achievements</NavLink>
-      </Box>
-
-      <Routes>
-        <Route path="" element={<GeneralPanel />} />
-        <Route path="challenges" element={<ChallengePanel />} />
-        <Route path="users" element={<UserPanel />} />
-        <Route path="achievements" element={<AchievementPanel />} />
-      </Routes>
+    <Box p="xl">
+      <Paper p="md" shadow="xl" radius="lg" bg="gray.0">
+        <Flex
+          justify="center"
+          align="center"
+          gap="lg"
+          direction={{ base: 'column', sm: 'row' }}
+        >
+          <NavLink to="">General</NavLink>
+          <NavLink to="challenges">Challenges</NavLink>
+          <NavLink to="users">Users</NavLink>
+          <NavLink to="achievements">Achievements</NavLink>
+        </Flex>
+        <Routes>
+          <Route path="" element={<GeneralPanel />} />
+          <Route path="challenges" element={<ChallengePanel />} />
+          <Route path="users" element={<UserPanel />} />
+          <Route path="achievements" element={<AchievementPanel />} />
+        </Routes>
+      </Paper>
     </Box>
   )
 }
 
-const NavLink = styled(Link)<
-  SpaceProps & FontSizeProps & { isActive?: boolean }
->`
-  ${space}
-  ${fontSize}
-  text-decoration: ${p => (p.isActive ? 'underline' : 'none')};
-`
-NavLink.defaultProps = {
-  fontSize: 3,
-  px: 3,
-  py: 2,
+const NavLink = ({ to, children }: PropsWithChildren<{ to: string }>) => {
+  return (
+    <StyledLink to={to}>
+      <Title order={2} color="customPink.0">
+        {children}
+      </Title>
+    </StyledLink>
+  )
 }
+
+const StyledLink = styled(Link)<{ isActive?: boolean }>`
+  text-decoration: ${({ isActive }) => (isActive ? 'underline' : 'none')};
+  color: ${({ theme }) => theme.colors.customPink[0]};
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+`

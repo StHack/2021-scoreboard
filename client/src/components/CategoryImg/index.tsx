@@ -1,8 +1,4 @@
-import { css } from '@emotion/react'
-import styled from '@emotion/styled'
 import { Category } from 'models/Category'
-import { size, SizeProps, space, SpaceProps } from 'styled-system'
-import { PlaceProps } from 'styles'
 import backdoor from './images/backdoor.png'
 import crypto from './images/crypto.png'
 import d from './images/default.png'
@@ -17,6 +13,7 @@ import recon from './images/recon.png'
 import reverse from './images/reverse.png'
 import shellcode from './images/shellcode.png'
 import web from './images/web.png'
+import { Image } from '@mantine/core'
 
 function categoryToImg (category: Category): string {
   switch (category) {
@@ -51,19 +48,10 @@ function categoryToImg (category: Category): string {
   }
 }
 
-type StyledIconProps = SpaceProps & SizeProps & PlaceProps
-
-const Img = styled.img<StyledIconProps>(
-  space,
-  size,
-  css`
-    object-fit: contain;
-  `,
-)
-
-export type CategoryImgProps = StyledIconProps & {
+export interface CategoryImgProps {
   category: Category
+  maw?: string
 }
-export function CategoryImg ({ category, ...p }: CategoryImgProps) {
-  return <Img {...p} src={categoryToImg(category)} title={category} />
+export function CategoryImg ({ category, maw }: CategoryImgProps) {
+  return <Image src={categoryToImg(category)} title={category} maw={maw} />
 }

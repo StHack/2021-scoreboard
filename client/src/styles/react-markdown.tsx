@@ -1,69 +1,66 @@
 import styled from '@emotion/styled'
 import { Components } from 'react-markdown'
-import {
-  color,
-  ColorProps,
-  fontSize,
-  FontSizeProps,
-  space,
-  SpaceProps,
-  textAlign,
-  TextAlignProps,
-} from 'styled-system'
-import { cleanStyledSystem } from 'styles'
+import { Text, Title } from '@mantine/core'
+
+const StyledUl = styled.ul`
+  padding-inline-start: 0.6rem;
+  margin: 0.8rem 0;
+`
 
 const ListItem = styled.li<{
   checked: boolean | null
   index: number
   ordered: boolean
 }>`
-  margin-left: ${p => p.theme.space[2]};
+  padding-left: 0.4rem;
 
   ::before {
     content: ${p => !p.ordered && "'▪ '"};
-    font-size: ${p => p.theme.fontSizes[2]};
+    font-size: 2rem;
+    position: relative;
+    top: 4px;
   }
+
+  list-style-type: none;
+  line-height: 1.2rem;
 `
 
 const Img = styled.img`
   max-width: 100%;
   display: block;
-  margin: ${p => p.theme.space[2]} auto;
+  margin: 8rem auto;
 `
 
-const Text = styled('p', cleanStyledSystem)<
-  SpaceProps & FontSizeProps & TextAlignProps & ColorProps
->`
-  ${textAlign}
-  ${fontSize}
-  ${space}
-  ${color}
+const MarkCode = styled.code`
+  width: 100%;
+  max-width: 100vw;
+  padding: 0.4rem;
+  background-color: ${({ theme }) => theme.colors.gray[5]};
+  border: 0;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  white-space: break-spaces;
 `
-Text.defaultProps = {
-  my: '2',
-  fontSize: '2',
-}
-
-const Code = styled.code`
-  padding: ${p => p.theme.space[1]};
-  background-color: ${p => p.theme.colors.greys[0]};
-  border: 1px solid ${p => p.theme.colors.greys[2]};
+const Link = styled.a`
+  color: ${({ theme }) => theme.black};
 `
 
 export const ReactMarkdownRenderers: Components = {
-  h1: p => <Text as="h1" my="4" fontSize="3" textAlign="center" {...p} />,
-  h2: p => <Text as="h2" my="3" {...p} />,
-  h3: p => <Text as="h3" {...p} />,
-  h4: p => <Text as="h4" {...p} />,
-  h5: p => <Text as="h5" {...p} />,
-  h6: p => <Text as="h6" {...p} />,
-  p: p => <Text fontSize="0" textAlign="initial" {...p} />,
+  h1: p => <Title order={1} ta="center" {...p} />,
+  h2: p => <Title order={2} {...p} />,
+  h3: p => <Title order={3} {...p} />,
+  h4: p => <Title order={4} {...p} />,
+  h5: p => <Title order={5} {...p} />,
+  h6: p => <Title order={6} {...p} />,
+  p: p => <Text ta="initial" {...p} />,
   // eslint-disable-next-line jsx-a11y/anchor-has-content
-  a: p => <a {...p} target="_blank" rel="noopener noreferrer" />,
+  a: p => <Link {...p} target="_blank" rel="noopener noreferrer" />,
+  ul: p => {
+    return <StyledUl {...p} />
+  },
   li: p => {
     return <ListItem {...p} />
   },
-  code: Code as any,
+  code: MarkCode as any,
   blockquote: p => <Text as="blockquote" color="red" {...(p as any)} />,
   // listItem: ListItem,
   img: Img as any,

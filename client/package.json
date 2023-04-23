@@ -12,10 +12,13 @@
     "prettier": "prettier --write \"src/**/*.+(ts|tsx|json)\""
   },
   "dependencies": {
-    "@emotion/react": "^11.9.0",
+    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.8.1",
+    "@mantine/core": "^6.0.7",
+    "@mantine/hooks": "^6.0.7",
     "@styled-system/css": "^5.1.5",
     "@styled-system/should-forward-prop": "^5.1.5",
+    "@tabler/icons-react": "^2.16.0",
     "http-proxy-middleware": "^2.0.6",
     "prettier": "^2.6.2",
     "react": "^18.1.0",

@@ -1,15 +1,15 @@
 import { ChangeEvent, useState } from 'react'
-import { useField } from './useField'
+import { useField, useFieldSelect } from './useField'
 import { BaseChallenge, Challenge } from 'models/Challenge'
 import { Difficulty } from 'models/Difficulty'
 import { useAdmin } from './useAdmin'
 import { useAuth } from './useAuthentication'
 import { Category } from 'models/Category'
 
-export function useChallengeForm (
+export const useChallengeForm = (
   chall: Challenge | undefined,
   onSuccess: () => void,
-) {
+) => {
   const isNewChallenge = chall === undefined
   const [isLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>()
@@ -40,7 +40,7 @@ export function useChallengeForm (
     disabled: isLoading,
     required: true,
   })
-  const categoryField = useField<Category>({
+  const categoryField = useFieldSelect<Category>({
     name: 'team',
     defaultValue: category ?? 'web',
     disabled: isLoading,
@@ -53,7 +53,7 @@ export function useChallengeForm (
     required: true,
   })
 
-  const difficultyField = useField<Difficulty>({
+  const difficultyField = useFieldSelect<Difficulty>({
     name: 'difficulty',
     defaultValue: difficulty ?? 'medium',
     disabled: isLoading,

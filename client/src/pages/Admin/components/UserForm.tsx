@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
-import { LabelInput } from 'components/LabelInput'
-import Popup from 'components/Popup'
-import { TextInput } from 'components/TextInput'
 import { useAdmin } from 'hooks/useAdmin'
 import { useField } from 'hooks/useField'
 import { User } from 'models/User'
-import { useRef } from 'react'
+import { useEffect } from 'react'
+import { Button, Group, Modal, TextInput, Title } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 
 export type UserEditMode = 'password' | 'team'
 
@@ -15,9 +14,9 @@ export type UserFormProps = {
   onClose: () => void
 }
 
-export function UserForm ({ user, editMode, onClose }: UserFormProps) {
+export const UserForm = ({ user, editMode, onClose }: UserFormProps) => {
+  const [modalOpened, { open, close }] = useDisclosure(false)
   const { changePassword, changeTeam } = useAdmin()
-  const ref = useRef<HTMLFormElement>(null)
   const { inputProp } = useField<string>({
     defaultValue: '',
     disabled: false,
@@ -25,36 +24,56 @@ export function UserForm ({ user, editMode, onClose }: UserFormProps) {
     required: true,
   })
 
-  return (
-    <Popup
-      title={`Update user ${user.username} ${editMode}`}
-      onCancel={onClose}
-      onValidate={() => ref.current?.requestSubmit()}
-    >
-      <Form
-        ref={ref}
-        onSubmit={e => {
-          e.preventDefault()
-          if (editMode === 'password') {
-            changePassword(user, inputProp.value)
-            onClose()
-          }
+  useEffect(() => {
+    open()
+  }, [open])
 
-          if (editMode === 'team') {
-            changeTeam(user, inputProp.value)
-            onClose()
-          }
-        }}
-      >
-        <LabelInput label={editMode} required>
-          <TextInput
-            type={editMode === 'password' ? 'password' : 'text'}
-            minLength={5}
-            {...inputProp}
-          />
-        </LabelInput>
+  const handleCloseModal = () => {
+    close()
+    onClose()
+  }
+  const onSubmit = () => {
+    switch (editMode) {
+      case 'password':
+        changePassword(user, inputProp.value)
+        onClose()
+        break
+      case 'team':
+        changeTeam(user, inputProp.value)
+        onClose()
+        break
+    }
+  }
+
+  return (
+    <Modal
+      opened={modalOpened}
+      onClose={handleCloseModal}
+      centered
+      size="xl"
+      withCloseButton={false}
+    >
+      <Title order={2} ta="center" color="customPink.0">
+        {`Update user ${user.username} ${editMode}`}
+      </Title>
+      <Form>
+        <TextInput
+          label={editMode === 'password' ? 'Password' : 'Text'}
+          type={editMode === 'password' ? 'password' : 'text'}
+          minLength={5}
+          withAsterisk
+          {...inputProp}
+        />
       </Form>
-    </Popup>
+      <Group grow mt="xl">
+        <Button variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button color="customPink.0" onClick={onSubmit}>
+          Confirm
+        </Button>
+      </Group>
+    </Modal>
   )
 }
 

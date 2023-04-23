@@ -1,54 +1,45 @@
-import styled from '@emotion/styled'
 import { Challenge } from 'models/Challenge'
 import { ChallengeScore } from 'models/GameScore'
-import { space, SpaceProps } from 'styled-system'
+import { Flex, Paper, Title } from '@mantine/core'
+import {
+  HeadData,
+  RowData,
+  TableSort,
+} from '../../../components/TableSortFilter/TableSortFilter'
 
 export type ChallsScoreBoardProps = {
   score: Record<string, ChallengeScore>
   challenges: Challenge[]
 }
+
 export function ChallsScoreBoard ({ score, challenges }: ChallsScoreBoardProps) {
+  const headers: HeadData[] = [
+    { key: 'name', sortable: true, label: 'Challs' },
+    { key: 'score', sortable: true, label: 'Score' },
+  ]
+
+  const data: RowData[] = challenges.map(c => {
+    return {
+      name: c.name,
+      score: score[c.name].score,
+    }
+  })
+
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th>Challs</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      {challenges.map(c => (
-        <tr key={c.name}>
-          <td>{c.name}</td>
-          <td>{score[c.name].score}</td>
-        </tr>
-      ))}
-    </Table>
+    <Paper
+      shadow={'md'}
+      radius={'lg'}
+      p={{ base: 'sm', md: 'xl' }}
+      mah={{ base: '30rem', md: '100%' }}
+      sx={{ flexShrink: 0 }}
+      bg="gray.0"
+    >
+      <Flex h="100%" direction="column" maw="20rem">
+        <Title order={2} color="customPink.0" align="center">
+          Challs score
+        </Title>
+        <TableSort headers={headers} data={data} filterable={false} />
+      </Flex>
+    </Paper>
   )
 }
-
-const Table = styled.table<SpaceProps>`
-  border-collapse: collapse;
-  border: 2px solid rgb(200, 200, 200);
-  ${space}
-
-  td,
-  th {
-    border: 1px solid rgb(190, 190, 190);
-  }
-
-  th {
-    background-color: rgb(235, 235, 235);
-  }
-
-  td {
-    text-align: center;
-  }
-
-  tr:nth-of-type(even) {
-    background-color: rgb(250, 250, 250);
-  }
-
-  tr:nth-of-type(odd) {
-    background-color: rgb(245, 245, 245);
-  }
-`

@@ -1,7 +1,5 @@
-import { Box } from 'components/Box'
-import { Button } from 'components/Button'
 import { Challenge } from 'models/Challenge'
-import { GridAreaProps } from 'styled-system'
+import { Button, Flex, Group, Text } from '@mantine/core'
 
 const GroupBy = ['Category', 'Difficulty', 'Author'] as const
 export type GroupByType = typeof GroupBy[number]
@@ -10,33 +8,25 @@ type GroupBySelectorProps = {
   value: GroupByType
   onChange: (value: GroupByType) => void
 }
-export function GroupBySelector ({
-  value,
-  onChange,
-  gridArea,
-}: GroupBySelectorProps & GridAreaProps) {
+
+export function GroupBySelector ({ value, onChange }: GroupBySelectorProps) {
   return (
-    <Box
-      display="flex"
-      overflowX="auto"
-      width="100%"
-      alignItems="baseline"
-      my="2"
-      mx="1"
-      gridArea={gridArea}
-    >
-      <p>Group By</p>
-      {GroupBy.map(g => (
-        <Button
-          key={g}
-          onClick={() => onChange(g)}
-          disabled={value === g}
-          m="2"
-        >
-          {g}
-        </Button>
-      ))}
-    </Box>
+    <Flex align="center">
+      <Text>Group By : </Text>
+      <Group ml="sm">
+        {GroupBy.map(g => (
+          <Button
+            key={g}
+            variant="outline"
+            color="customPink.0"
+            onClick={() => onChange(g)}
+            disabled={value === g}
+          >
+            {g}
+          </Button>
+        ))}
+      </Group>
+    </Flex>
   )
 }
 
