@@ -4,7 +4,7 @@ import { Footer } from 'components/Footer'
 import { Header } from 'components/Header'
 import { ProvideAdmin } from 'hooks/useAdmin'
 import { useAuth } from 'hooks/useAuthentication'
-import { ProvideGame, useGame } from 'hooks/useGame'
+import { ProvideGame } from 'hooks/useGame'
 import { ProvidePlayer } from 'hooks/usePlayer'
 import { Admin } from 'pages/Admin'
 import { Game } from 'pages/Game'
@@ -29,7 +29,7 @@ const Container = styled.div`
 `
 
 export default function App () {
-  const { isAuthenticated, isAuthorized } = useAuth()
+  const { isAuthenticated, isAuthorized, hasReadRules } = useAuth()
 
   return (
     <ThemeProvider
@@ -56,8 +56,8 @@ export default function App () {
                 path="/"
                 element={
                   <ProtectedRoute
-                    condition={isAuthenticated}
-                    fallbackTo="/login"
+                    condition={isAuthenticated && hasReadRules}
+                    fallbackTo={isAuthenticated ? '/rules' : '/login'}
                   >
                     <ProvideGame>
                       <ProvidePlayer>
@@ -82,10 +82,7 @@ export default function App () {
               <Route
                 path="/register"
                 element={
-                  <ProtectedRoute
-                    condition={!isAuthenticated}
-                    fallbackTo="/"
-                  >
+                  <ProtectedRoute condition={!isAuthenticated} fallbackTo="/">
                     <ProvideGame>
                       <Register />
                     </ProvideGame>

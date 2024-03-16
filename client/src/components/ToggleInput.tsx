@@ -9,11 +9,13 @@ import {
 
 export type ToggleInputProps = {
   checked: boolean
+  disabled?: boolean
   onChange: (value: boolean) => void
 }
 
 export function ToggleInput ({
   checked,
+  disabled,
   onChange,
   children,
   ...props
@@ -23,6 +25,7 @@ export function ToggleInput ({
       <Input
         type="checkbox"
         checked={checked}
+        disabled={disabled}
         onChange={e => onChange(e.target.checked)}
       />
       <Span />

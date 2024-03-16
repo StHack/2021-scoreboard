@@ -7,11 +7,14 @@ import {
   useState,
 } from 'react'
 import { login, logout, me } from 'services/authenticate'
+import { useStorage } from './useStorage'
 
 export type AuthContext = {
   user?: User
   isAuthenticated: boolean
   isAuthorized: boolean
+  hasReadRules: boolean
+  readRules: () => void
   logOut: () => Promise<void>
   logIn: (
     username: string,
@@ -26,6 +29,8 @@ const authContext = createContext<AuthContext>({
   user: undefined,
   isAuthenticated: false,
   isAuthorized: false,
+  hasReadRules: false,
+  readRules: () => {},
   logOut: () => Promise.resolve(),
   logIn: () => Promise.resolve({ ok: false, error: 'oups' }),
 })
@@ -41,6 +46,10 @@ export const useAuth = () => {
 
 function useProvideAuth (): AuthContext {
   const [user, setUser] = useState<User>()
+  const [hasReadRules, setHasReadRules] = useStorage<boolean>(
+    'hasReadRules',
+    false,
+  )
 
   useEffect(() => {
     const init = async () => {
@@ -57,6 +66,8 @@ function useProvideAuth (): AuthContext {
     user,
     isAuthenticated: user !== undefined,
     isAuthorized: !!user?.isAdmin,
+    hasReadRules,
+    readRules: () => setHasReadRules(true),
     logOut: async () => {
       if (!user) return
       await logout()

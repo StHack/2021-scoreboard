@@ -1,11 +1,16 @@
 import { Box } from 'components/Box'
+import { ToggleInput } from 'components/ToggleInput'
+import { useAuth } from 'hooks/useAuthentication'
 import { useGame } from 'hooks/useGame'
 import { GameConfig } from 'models/GameConfig'
 import ReactMarkdown from 'react-markdown'
+import { useNavigate } from 'react-router-dom'
 import { ReactMarkdownRenderers } from 'styles/react-markdown'
 
 export function Rules () {
   const { gameConfig } = useGame()
+  const { isAuthenticated, hasReadRules, readRules } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <Box
@@ -17,7 +22,7 @@ export function Rules () {
       display="flex"
       flexDirection="column"
       alignItems="center"
-     >
+    >
       <Box
         p="4"
         pt="1"
@@ -30,7 +35,22 @@ export function Rules () {
           components={ReactMarkdownRenderers}
           children={rulesMarkdown(gameConfig)}
         />
+        {isAuthenticated && (
+          <Box display="grid" placeContent="center" py="4">
+            <ToggleInput
+              checked={hasReadRules}
+              onChange={() => {
+                readRules()
+                navigate('/')
+              }}
+              disabled={hasReadRules}
+            >
+              I confirm that I have read and accepted the CTF rules
+            </ToggleInput>
+          </Box>
+        )}
       </Box>
+
       <Box
         p="4"
         pt="1"
